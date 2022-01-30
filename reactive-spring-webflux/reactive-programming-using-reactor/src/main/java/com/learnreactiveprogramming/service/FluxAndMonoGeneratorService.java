@@ -150,5 +150,8 @@ public class FluxAndMonoGeneratorService {
 
 //        flux.subscribe(System.out::println);
         obj.nameMono().log().subscribe(System.out::println);
+
+
+        
     }
 }
