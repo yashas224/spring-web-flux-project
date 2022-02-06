@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,9 +22,15 @@ public class MovieInfo {
     @Id
     private String movieInfoId;
 
+    @NotBlank(message = "MoieInfo Name must be present !!!")
     private String name;
+
+    @NotNull
+    @Positive(message = "MoieInfo year must be positve value!!!")
     private Integer year;
-    private List<String> cast;
+
+    @NotEmpty(message = "need minium 1 caste")
+    private List<@NotBlank(message = "caste cannot be empty") String> cast;
     private LocalDate releaseDate;
 
 }

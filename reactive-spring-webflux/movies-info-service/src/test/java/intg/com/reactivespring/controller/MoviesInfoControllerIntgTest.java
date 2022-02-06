@@ -7,19 +7,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -122,7 +117,7 @@ class MoviesInfoControllerIntgTest {
     @Test
     void update() {
         String movieId = "abc";
-        var updatedMovieInfo = MovieInfo.builder().name("Test Update").build();
+        var updatedMovieInfo = MovieInfo.builder().name("Test Update").cast(Arrays.asList("aaa")).year(2000).build();
         webTestClient.put()
                 .uri("/v1/movieInfos/" + movieId)
                 .bodyValue(updatedMovieInfo)
@@ -159,4 +154,17 @@ class MoviesInfoControllerIntgTest {
                     Assertions.assertNull(movieInfo);
                 });
     }
+
+    @Test
+    void update_Notfound() {
+        String movieId = "def";
+        var updatedMovieInfo = MovieInfo.builder().name("Test Update").cast(Arrays.asList("aaa")).year(2000).build();
+        webTestClient.put()
+                .uri("/v1/movieInfos/" + movieId)
+                .bodyValue(updatedMovieInfo)
+                .exchange()
+                .expectStatus().isNotFound()
+        ;
+    }
+
 }
