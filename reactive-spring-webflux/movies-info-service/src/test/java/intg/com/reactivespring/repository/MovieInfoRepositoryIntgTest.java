@@ -105,4 +105,17 @@ class MovieInfoRepositoryIntgTest {
         StepVerifier.create(movieInfo)
                 .verifyComplete();
     }
+
+    @Test
+    void findByYear() {
+
+        var movieInfoFlux = movieInfoRepository.findByYear(2012).log();
+
+        StepVerifier.create(movieInfoFlux)
+                .assertNext(movieInfo -> {
+                    Assertions.assertNotNull(movieInfo);
+                    Assertions.assertEquals("abc", movieInfo.getMovieInfoId());
+                })
+                .verifyComplete();
+    }
 }

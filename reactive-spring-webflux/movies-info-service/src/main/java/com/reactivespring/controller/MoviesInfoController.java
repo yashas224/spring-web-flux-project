@@ -2,6 +2,7 @@ package com.reactivespring.controller;
 
 import com.reactivespring.domain.MovieInfo;
 import com.reactivespring.service.MoviesInfoService;
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,10 @@ public class MoviesInfoController {
 
 
     @GetMapping("/movieInfos")
-    public Flux<MovieInfo> getAllMovieInfo() {
+    public Flux<MovieInfo> getAllMovieInfo(@RequestParam(required = false, name = "year") Integer year) {
+        if (year != null) {
+            return movieInfoService.getByYear(year);
+        }
         return movieInfoService.getAllMovieInfos();
     }
 
@@ -51,4 +55,5 @@ public class MoviesInfoController {
     public Mono<Void> delete(@PathVariable String id) {
         return movieInfoService.delete(id).log();
     }
+
 }
