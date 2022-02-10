@@ -167,4 +167,21 @@ class MoviesInfoControllerIntgTest {
         ;
     }
 
+    @Test
+    void getAllMovieInfoByYear() {
+        var moviesInfos = webTestClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/v1/movieInfos")
+                        .replaceQueryParam("year", 2012).
+                        build())
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .returnResult(MovieInfo.class)
+                .getResponseBody().log();
+
+        StepVerifier.create(moviesInfos)
+                .expectNextCount(1)
+                .verifyComplete();
+    }
+
 }
