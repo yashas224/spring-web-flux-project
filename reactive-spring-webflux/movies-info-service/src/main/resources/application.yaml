@@ -5,6 +5,10 @@ spring:
 
 debug: true
 
+logging:
+  level:
+    root: debug
+
 ---
 
 spring:
