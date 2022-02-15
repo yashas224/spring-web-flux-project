@@ -1,2 +1,22 @@
+spring:
+  profiles:
+    active: local
+
 server:
   port: 8081
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile:
+        - local
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: root
+      database: spring-webflux-demo
+
+---
