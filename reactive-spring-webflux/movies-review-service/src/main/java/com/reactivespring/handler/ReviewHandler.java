@@ -3,6 +3,7 @@ package com.reactivespring.handler;
 
 import com.reactivespring.domain.Review;
 import com.reactivespring.exception.ReviewDataException;
+import com.reactivespring.exception.ReviewNotFoundException;
 import com.reactivespring.repository.ReviewReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,15 +64,17 @@ public class ReviewHandler {
         Mono<Review> reviewMono = reviewReactiveRepository.findById(id);
 
         return reviewMono.flatMap(DBReview ->
-                request.bodyToMono(Review.class)
-                        .map(reqReview -> {
-                            DBReview.setComment(reqReview.getComment());
-                            DBReview.setMovieInfoId(reqReview.getMovieInfoId());
-                            DBReview.setRating(reqReview.getRating());
-                            return DBReview;
-                        }).flatMap(ToBesavedReview -> {
-                            return reviewReactiveRepository.save(ToBesavedReview);
-                        }).flatMap(savedReview -> ServerResponse.ok().bodyValue(savedReview))
+                        request.bodyToMono(Review.class)
+                                .map(reqReview -> {
+                                    DBReview.setComment(reqReview.getComment());
+                                    DBReview.setMovieInfoId(reqReview.getMovieInfoId());
+                                    DBReview.setRating(reqReview.getRating());
+                                    return DBReview;
+                                }).flatMap(ToBesavedReview -> {
+                                    return reviewReactiveRepository.save(ToBesavedReview);
+                                }).flatMap(savedReview -> ServerResponse.ok().bodyValue(savedReview))
+//        ).switchIfEmpty(Mono.error(new ReviewNotFoundException("Review Not found for id" + id)));
+
         ).switchIfEmpty(ServerResponse.notFound().build());
 
     }
