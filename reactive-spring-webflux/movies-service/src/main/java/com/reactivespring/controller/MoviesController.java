@@ -32,12 +32,13 @@ public class MoviesController {
     @GetMapping("/{id}")
     public Mono<Movie> getMovies(@PathVariable(name = "id") String movieId) {
         Mono<MovieInfo> movieInfoMono = moviesInfoRestClient.retriveMovieInfo(movieId);
+        log.info("After retriving Movie Info Object");
         return movieInfoMono
                 .flatMap(movieInfo -> {
                     Flux<Review> flux = reviewsRestClient.retriveRevew(movieId);
                     Mono<List<Review>> listMono = flux.collectList();
                     log.info("List is" + listMono);
-                    return listMono.flatMap(reviews -> Mono.just(new Movie(movieInfo, reviews)));
+                    return listMono.map(reviews -> new Movie(movieInfo, reviews));
                 });
     }
 

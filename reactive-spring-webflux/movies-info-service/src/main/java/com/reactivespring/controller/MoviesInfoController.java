@@ -35,8 +35,11 @@ public class MoviesInfoController {
     }
 
     @GetMapping("/movieInfos/{movieInfoId}")
-    public Mono<MovieInfo> getMovieInfoById(@PathVariable(name = "movieInfoId") String movieInfoId) {
-        return movieInfoService.getMovieInfo(movieInfoId);
+    public Mono<ResponseEntity<MovieInfo>> getMovieInfoById(@PathVariable(name = "movieInfoId") String movieInfoId) {
+        var movieInfoMono = movieInfoService.getMovieInfo(movieInfoId);
+
+        return movieInfoMono.map(movieInfo -> ResponseEntity.ok(movieInfo))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
     @PutMapping("/movieInfos/{id}")
