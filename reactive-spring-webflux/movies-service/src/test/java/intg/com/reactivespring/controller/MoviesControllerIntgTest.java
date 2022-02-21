@@ -86,6 +86,8 @@ public class MoviesControllerIntgTest {
                     var result = movieEntityExchangeResult.getResponseBody();
                     Assertions.assertEquals("There is no Movie Info for id" + movieId, result);
                 });
+        verify(1, getRequestedFor(urlEqualTo("/v1/movieInfos/" + movieId)));
+
     }
 
 
@@ -146,6 +148,38 @@ public class MoviesControllerIntgTest {
                         var result = movieEntityExchangeResult.getResponseBody();
                         Assertions.assertEquals("Sorry Exception Occured !!!", result);
                     });
+
+            verify(4, getRequestedFor(urlEqualTo("/v1/movieInfos/" + movieId)));
         }
+    }
+
+
+    @Test
+    void retriveMovieById_Reviews_5xx() {
+        String movieId = "movieId";
+
+        // mock for Movie Info Service Call
+        stubFor(get(urlEqualTo("/v1/movieInfos/" + movieId))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("movieinfo.json")));
+
+        // mock for reviews Service Call
+        stubFor(get(urlPathEqualTo("/v1/reviews")).withQueryParam("movieInfoId", equalTo(movieId))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .withHeader("Content-Type", "application/json")
+                ));
+
+
+        webTestClient.get()
+                .uri("/v1/movies/{id}", movieId)
+                .exchange()
+                .expectStatus()
+                .is5xxServerError();
+
+        verify(4, getRequestedFor(urlPathEqualTo("/v1/reviews")).withQueryParam("movieInfoId", equalTo(movieId)));
+
     }
 }

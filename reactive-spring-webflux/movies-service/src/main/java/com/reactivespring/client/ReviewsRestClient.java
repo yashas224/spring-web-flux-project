@@ -5,6 +5,7 @@ import com.reactivespring.exception.MoviesInfoClientException;
 import com.reactivespring.exception.MoviesInfoServerException;
 import com.reactivespring.exception.ReviewsClientException;
 import com.reactivespring.exception.ReviewsServerException;
+import com.reactivespring.util.RetryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +47,7 @@ public class ReviewsRestClient {
                     return Mono.error(new ReviewsServerException("Error Occured Sorry !!!!!"));
                 })
                 .bodyToFlux(Review.class)
+                .retryWhen(RetryUtil.getRetrySpec())
                 .log();
     }
 
