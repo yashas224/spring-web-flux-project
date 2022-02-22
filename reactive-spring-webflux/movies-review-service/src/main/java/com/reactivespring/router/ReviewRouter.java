@@ -20,6 +20,7 @@ public class ReviewRouter {
                             .nest(RequestPredicates.path("/reviews"), builder1 -> {
                                 builder1
                                         .POST(request -> reviewHandler.addReview(request))
+                                        .GET("/stream", request -> reviewHandler.getReviewsStream(request))
                                         .GET(request -> reviewHandler.getReviews(request))
                                         .PUT("/{id}", request -> reviewHandler.updateReview(request))
                                         .DELETE("/{id}", request -> reviewHandler.deleteReview(request))

@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.Exceptions;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
@@ -53,4 +54,11 @@ public class MoviesInfoRestClient {
     }
 
 
+    public Flux<MovieInfo> getMovieInfoStream() {
+        return webClient.get()
+                .uri(url + "/stream")
+                .retrieve()
+                .bodyToFlux(MovieInfo.class)
+                .log();
+    }
 }

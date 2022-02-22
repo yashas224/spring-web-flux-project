@@ -184,4 +184,43 @@ class MoviesInfoControllerIntgTest {
                 .verifyComplete();
     }
 
+
+    @Test
+    void getAllMovieInfo_streams() {
+
+        webTestClient.post()
+                .uri(uriBuilder -> {
+                    return uriBuilder.path("/v1/movieInfos").build();
+                })
+                .bodyValue(new MovieInfo(null, "Test Movie",
+                        2005, List.of("Christian Bale", "Michael Cane"), LocalDate.parse("2005-06-15")))
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody(MovieInfo.class)
+                .consumeWith(movieInfoEntityExchangeResult -> {
+                    var body = movieInfoEntityExchangeResult.getResponseBody();
+                    Assertions.assertNotNull(body);
+                    Assertions.assertNotNull(body.getMovieInfoId());
+                    Assertions.assertEquals("Test Movie", body.getName());
+                });
+
+        var moviesStreamFlux  = webTestClient.get()
+                .uri("/v1/movieInfos/stream")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .returnResult(MovieInfo.class)
+                .getResponseBody();
+
+        StepVerifier.create(moviesStreamFlux)
+                .assertNext(movieInfo -> {
+                    Assertions.assertNotNull(movieInfo.getMovieInfoId());
+                })
+                .thenCancel()
+                .verify();
+
+
+    }
+
 }
